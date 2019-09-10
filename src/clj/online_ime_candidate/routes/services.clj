@@ -27,7 +27,7 @@
         cands (map #(str/lower-case %) en-cands)
         starts (map #(str %) (into #{} (map #(str (first %)) cands)))
         condition-str (str/join "," (map #(str "'" % "'") cands))
-        mn-cands (flatten (map #(jdbc/query db [(str "select id, char_word, active_order from " % " where giglgc in (" condition-str ")")]) starts))
+        mn-cands (flatten (map #(jdbc/query db [(str "select id, char_word, giglgc, active_order, '" % "' as tb  from " % " where giglgc in (" condition-str ")")]) starts))
         data (sort-by :active_order > mn-cands)]
     data))
 
