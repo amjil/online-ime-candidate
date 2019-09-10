@@ -13,21 +13,23 @@
     [clojure.java.io :as io]
     [clj-http.client :as client]
     [cheshire.core :as cheshire]
-    [clojure.tools.logging :as log]))
+    [clojure.tools.logging :as log]
+    [clojure.java.jdbc :as jdbc]
+    [clojure.string :as str]))
+
+(def db {:classname   "org.sqlite.JDBC"
+         :subprotocol "sqlite"
+         :subname     "./database.db"})
 
 
-(def xvlvn-url "http://ime.xvlvn.com/xn-ime?language=mn")
-
-(defn candidate [input]
-  (let [html-data (client/get xvlvn-url {:query-params {:language "mn" :input input}})
-        data (map #(first %)
-                  (-> html-data
-                      :body
-                      (cheshire/parse-string)
-                      (get "result")
-                      first))]
-    (log/warn "html response = " (:body html-data))
-    {:data data}))
+(defn candidate [candstr]
+  (let [en-cands (str/split candstr #",")
+        cands (map #(str/lower-case %) en-cands)
+        starts (map #(str %) (into #{} (map #(str (first %)) cands)))
+        condition-str (str/join "," (map #(str "'" % "'") cands))
+        mn-cands (flatten (map #(jdbc/query db [(str "select id, char_word, active_order from " % " where giglgc in (" condition-str ")")]) starts))
+        data (sort-by :active_order > mn-cands)]
+    data))
 
 (defn service-routes []
   ["/api"

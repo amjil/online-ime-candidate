@@ -4,9 +4,9 @@
   :url "http://example.com/FIXME"
 
   :dependencies [[ch.qos.logback/logback-classic "1.2.3"]
-                 [cheshire "5.8.1"]
+                 [cheshire "5.9.0"]
                  [clojure.java-time "0.3.2"]
-                 [clj-http "3.9.1"]
+                 [clj-http "3.10.0"]
                  [cprop "0.1.14"]
                  [expound "0.7.2"]
                  [funcool/struct "1.4.0"]
@@ -17,17 +17,19 @@
                  [metosin/muuntaja "0.6.4"]
                  [metosin/reitit "0.3.9"]
                  [metosin/ring-http-response "0.9.1"]
+                 [org.xerial/sqlite-jdbc "3.28.0"]
+                 [org.clojure/java.jdbc "0.7.8"]
                  [mount "0.1.16"]
                  [nrepl "0.6.0"]
                  [org.clojure/clojure "1.10.1"]
                  [org.clojure/tools.cli "0.4.2"]
                  [org.clojure/tools.logging "0.5.0"]
-                 [ring-cors "0.1.12"]
+                 [ring-cors "0.1.13"]
                  [ring-webjars "0.2.0"]
                  [ring/ring-core "1.7.1"]
-                 [ring/ring-json "0.4.0"]
+                 [ring/ring-json "0.5.0"]
                  [ring/ring-defaults "0.3.2"]
-                 [selmer "1.12.14"]]
+                 [selmer "1.12.17"]]
 
   :min-lein-version "2.0.0"
 
@@ -37,7 +39,7 @@
   :target-path "target/%s/"
   :main ^:skip-aot online-ime-candidate.core
 
-  :plugins []
+  :plugins [[lein-ancient "0.6.15"]]
 
   :profiles
   {:uberjar {:omit-source true
