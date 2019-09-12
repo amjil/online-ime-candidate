@@ -27,9 +27,21 @@
         cands (map #(str/lower-case %) en-cands)
         starts (map #(str %) (into #{} (map #(str (first %)) cands)))
         condition-str (str/join "," (map #(str "'" % "'") cands))
-        mn-cands (flatten (map #(jdbc/query db [(str "select id, char_word, giglgc, active_order, '" % "' as tb  from " % " where giglgc in (" condition-str ")")]) starts))
-        data (sort-by :active_order > mn-cands)]
+        mn-cands (flatten (map #(jdbc/query db [(str "select id, char_word, bqr_biclg, giglgc, case when active_order is not null then active_order else 0 end as active_order, '" % "' as tb  from " % " where giglgc in (" condition-str ")")]) starts))]
+        ; data (if (empty? mn-cands) [] (sort-by :active_order > mn-cands))]
+    ; data))
+    mn-cands))
+
+(defn bqr-candidate [candstr]
+  (let [table (first candstr)
+        sql-str (str "select id, char_word, bqr_biclg, giglgc, active_order, '" table "' as tb  from " table " where bqr_biclg = ?")
+        data (jdbc/query db [sql-str candstr])]
     data))
+
+(defn bqr-update []
+  (let [sql-str "update r set active_order = 1 where id = 241"
+        result (jdbc/update! db "r" {:active_order 1} ["id = 1"])]
+    result))
 
 (defn service-routes []
   ["/api"
