@@ -38,9 +38,16 @@
         data (jdbc/query db [sql-str candstr])]
     data))
 
-(defn bqr-update []
-  (let [sql-str "update r set active_order = 1 where id = 241"
-        result (jdbc/update! db "r" {:active_order 1} ["id = 1"])]
+(defn gl-candidate [candstr]
+  (let [table (first candstr)
+        sql-str (str "select id, char_word, bqr_biclg, giglgc, active_order, '" table "' as tb  from " table " where giglgc = ?")
+        data (jdbc/query db [sql-str candstr])]
+    data))
+
+(defn bqr-update [id candstr]
+  (let [table (first candstr)
+        sql-str (str "update '" table "' set active_order = active_order + 1 where id = ?")
+        result (jdbc/execute! db [sql-str id])]
     result))
 
 (defn service-routes []
@@ -87,6 +94,13 @@
            :handler (fn [{{{:keys [input]} :query} :parameters}]
                       {:status 200
                        :body (candidate input)})}}]
+
+   ["/update-order"
+    {:get {
+           :parameters {:query {:input string? :id int?}}
+           :handler (fn [{{{:keys [input id]} :query} :parameters}]
+                      {:status 200
+                       :body (bqr-update id input)})}}]
 
 
    ["/math"
