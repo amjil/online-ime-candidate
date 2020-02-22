@@ -50,6 +50,8 @@
     result))
 
 (defn next-words [candstr id]
+  (log/warn "start next words")
+  (log/warn "Table = " (first candstr) " id = " id)
   (let [table (first candstr)
         sql-str "select id, t1, id1, t2, id2, char_word from phrase1 where t1 = ? and id1 = ?"
         data (->> (group-by #(:t2 %) (jdbc/query db [sql-str table id]))
