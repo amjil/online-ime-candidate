@@ -28,7 +28,9 @@
         starts (map #(str %) (into #{} (map #(str (first %)) cands)))
         condition-str (str/join "," (map #(str "'" % "'") cands))
         mn-cands (flatten (map #(jdbc/query db [(str "select id, char_word, bqr_biclg, giglgc, case when active_order is not null then active_order else 0 end as active_order, '" % "' as tb  from " % " where giglgc in (" condition-str ")")]) starts))
-        data (if (empty? mn-cands) [] (sort-by :active_order > mn-cands))]
+        cand-result (concat mn-cands (flatten (map #(jdbc/query db [(str "select id, char_word, bqr_biclg, giglgc, case when active_order is not null then active_order else 0 end as active_order, '" % "' as tb  from " % " where bqr_biclg in (" condition-str ")")]) starts)))
+        data (if (empty? cand-result) [] (sort-by :active_order > cand-result))]
+    (log/warn data)
     data))
 
 (defn bqr-candidate [candstr]
