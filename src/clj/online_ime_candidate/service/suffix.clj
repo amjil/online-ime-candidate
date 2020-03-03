@@ -12,4 +12,11 @@
     (->> data
          (map :char_word)
          (str/join "\n")
-         (spit (str table "-" suffix ".txt")))))
+         (spit (str table ">" suffix ".txt")))))
+
+(defn prefix [table x]
+  (let [data (jdbc/query db [(str "select id, char_word from " table " where bqr_biclg like '" x "%'")])]
+    (->> data
+         (map :char_word)
+         (str/join "\n")
+         (spit (str table "<" x ".txt")))))

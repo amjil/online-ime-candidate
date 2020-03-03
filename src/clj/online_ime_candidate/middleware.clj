@@ -16,7 +16,7 @@
 
 (defn wrap-base [handler]
   (-> ((:middleware defaults) handler)
-    (wrap-cors :access-control-allow-origin [#"http://localhost:9000"]
+    (wrap-cors :access-control-allow-origin [#"http://localhost:9000" #"http://192.168.1.173:9000"]
                :access-control-allow-methods [:get :put :post :delete :POST]
                :access-control-allow-headers ["content-type"]
                :access-control-allow-credentials "true")
