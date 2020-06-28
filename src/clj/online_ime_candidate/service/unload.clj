@@ -89,9 +89,13 @@
   (d/transact! conn data)
   nil)
 
+
+; (d/q '[ :find ?i ?n ?o :where [?e :short "ab"] [?e :id ?i] [?e :value ?n] [?e :order  ?o]] @unload/conn)
+; (d/q '[ :find ?i ?n ?o :where [?e :id 655] [?e :child ?f] [?f :id ?i] [?f :value ?n ] [?f :order ?o]] @unload/conn)
+
 (defn query-candidate [index]
-  (d/q  [:find ?n ?o
-         :where [?e :short index]
-                [?e :value ?n]
-                [?e :order ?o]]
+  (d/q  '[:find ?n ?o
+          :where [?e :short index]
+                 [?e :value ?n]
+                 [?e :order ?o]]
       @conn))
