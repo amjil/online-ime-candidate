@@ -1,7 +1,8 @@
 (ns online-ime-candidate.service.unload
   (:require
     [clojure.string :as str]
-    [clojure.java.jdbc :as jdbc]))
+    [clojure.java.jdbc :as jdbc]
+    [datascript.core :as d]))
 
 (def db {:classname   "org.sqlite.JDBC"
          :subprotocol "sqlite"
@@ -56,7 +57,7 @@
 (defn get-candidate [db indexed id]
   (let [cand (get db id)]
     (if cand
-      (map #(get indexed %) cand)
+      (filter some? (map #(get indexed %) cand))
       [])))
 
 (defn select-all []
@@ -65,10 +66,32 @@
         data
         (->> data
              flatten
-             (keep-indexed #(assoc %2 :seq %1)))
+             (keep-indexed #(assoc %2 :seq (inc %1))))
         index-data (->> data
                         (map #(hash-map (str (:tb %) (:id %)) (:seq %)))
                         (into {}))]
-    (map #(assoc % :child (get-candidate candidate index-data (str (:tb %) (:id %)))) data)))
+    (->> data
+         (map #(assoc % :child (get-candidate candidate index-data (str (:tb %) (:id %)))))
+         (map #(hash-map :id (:seq %)
+                         :value (:word %)
+                         :short (:simple %)
+                         :index (:total %)
+                         :order (:active_order %)
+                         :child (:child %))))))
 
     ; (group-by #(str (:tb %) (:id %)))))
+
+(def schema {:child {:db/cardinality :db.cardinality/many}})
+
+(def conn   (d/create-conn schema))
+
+(defn insert-into-ds [data]
+  (d/transact! conn data)
+  nil)
+
+(defn query-candidate [index]
+  (d/q  [:find ?n ?o
+         :where [?e :short index]
+                [?e :value ?n]
+                [?e :order ?o]]
+      @conn))
