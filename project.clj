@@ -9,6 +9,7 @@
                  [clj-http "3.10.0"]
                  [cprop "0.1.15"]
                  [datascript "0.18.13"]
+                 [datascript-transit "0.3.0"]
                  [expound "0.8.4"]
                  [enlive "1.1.6"]
                  [etaoin "0.3.6"]

@@ -2,7 +2,8 @@
   (:require
     [clojure.string :as str]
     [clojure.java.jdbc :as jdbc]
-    [datascript.core :as d]))
+    [datascript.core :as d]
+    [datascript.transit :as dt]))
 
 (def db {:classname   "org.sqlite.JDBC"
          :subprotocol "sqlite"
@@ -89,6 +90,16 @@
   (d/transact! conn data)
   nil)
 
+(def db-transit-str (atom ""))
+
+(defn to-transit [conn]
+  (reset! db-transit-str (dt/write-transit-str conn))
+  (prn (count @db-transit-str))
+  nil)
+
+(defn to-datascript [s]
+  (dt/read-transit-str @db-transit-str)
+  nil)
 
 ; (d/q '[ :find ?i ?n ?o :where [?e :short "ab"] [?e :id ?i] [?e :value ?n] [?e :order  ?o]] @unload/conn)
 ; (d/q '[ :find ?i ?n ?o :where [?e :id 655] [?e :child ?f] [?f :id ?i] [?f :value ?n ] [?f :order ?o]] @unload/conn)
